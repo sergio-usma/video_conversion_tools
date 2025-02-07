@@ -68,12 +68,6 @@ def main():
     estimated_time = total_files * 3  # Assuming 3 seconds per file as an approximation
     print("Estimated operation time: {:.2f} minutes".format(estimated_time / 60))
 
-    # Confirm if the user wants to proceed
-    proceed = input("Do you want to start compression? (Y/N): ").strip().upper()
-    if proceed != 'Y':
-        print("Operation canceled.")
-        return
-
     # Ask if the user wants to save videos in a new folder
     new_directory_choice = input("Do you want to save the videos in another folder? (Y/N): ").strip().upper()
     if new_directory_choice == 'Y':
@@ -91,6 +85,12 @@ def main():
     # Ask if the user wants to shut down the computer after compression
     shutdown_choice = input("Do you want to power off the computer when the process finishes? (Y/N): ").strip().upper()
     
+    # Confirm if the user wants to proceed
+    proceed = input("Do you want to start compression? (Y/N): ").strip().upper()
+    if proceed != 'Y':
+        print("Operation canceled.")
+        return
+
     log_entries = []
     compressed_files_count = 0
     compressed_total_size = 0
