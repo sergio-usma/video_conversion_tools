@@ -6,7 +6,7 @@ This Python script allows you to compress MP4 videos using the H.265 (HEVC) code
 
 ## ⚙️ Prerequisites
 
-1. **Python 3:** Ensure that Python 3 is installed on your system.
+1. **Python 3:** Ensure that Python 3 is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
 2. **FFmpeg:** Download and install FFmpeg from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html).
    - Add FFmpeg to the system PATH or set the `FFMPEG_PATH` variable in the script with the correct path.
 
@@ -17,12 +17,39 @@ This Python script allows you to compress MP4 videos using the H.265 (HEVC) code
 
 ---
 
+## 📦 Installing Libraries and Dependencies
+
+To run this script, you need to install the required Python libraries. Follow these steps:
+
+1. **Install `tqdm` for progress bars:**
+   ```bash
+   pip install tqdm
+   ```
+
+2. **Verify FFmpeg Installation:**
+   Ensure FFmpeg is installed and accessible from the command line. You can check this by running:
+   ```bash
+   ffmpeg -version
+   ```
+   If FFmpeg is not recognized, make sure it is added to your system PATH.
+
+3. **Set Up the Script:**
+   - Clone or download the script to your local machine.
+   - Open a terminal and navigate to the directory containing the script.
+
+4. **Run the Script:**
+   ```bash
+   python compress_mp4_videos_bulk.py
+   ```
+
+---
+
 ## 🚀 How to Use the Script
 
 1. Open a terminal (CMD, PowerShell, or terminal on Mac/Linux).
 2. Run the script with the following command:
    ```bash
-   python script_name.py
+   python compress_mp4_videos_bulk.py
    ```
 3. **Enter the directory** containing the video files.
 4. Review the **preliminary information:**
@@ -30,8 +57,9 @@ This Python script allows you to compress MP4 videos using the H.265 (HEVC) code
    - Total size of original files 📦
    - Estimated compressed size 📉
    - Estimated operation time ⏱️
-5. Confirm whether you want to proceed with the compression (`Y/N`).
-6. Decide whether to save the files in a new folder (`Y/N`). If you choose `Y`, provide the path where a subfolder named `COMPRESSED` will be created.
+5. Decide whether to save the files in a new folder (`Y/N`). If you choose `Y`, provide the path where a subfolder named `COMPRESSED` will be created.
+6. Decide whether to shut down the computer after compression (`Y/N`).
+7. Confirm whether you want to proceed with the compression (`Y/N`).
 
 ---
 
@@ -55,9 +83,10 @@ Number of files to process: 5
 Total size of original files: 1200.00 MB
 Estimated total compressed size: 780.00 MB
 Estimated operation time: 10.00 minutes
-Do you want to start the compression? (Y/N): Y
-Do you want to save the videos in a new folder? (Y/N): Y
-Enter the directory where you want to save the videos: D:\CompressedVideos
+Do you want to save the videos in another folder? (Y/N): Y
+Enter the path of the output directory: D:\CompressedVideos
+Do you want to power off the computer when the process finishes? (Y/N): N
+Do you want to start compression? (Y/N): Y
 Processing files: 100% |████████████████████| 5/5 [00:45<00:00, 9.00s/file]
 
 === Compression Summary ===
