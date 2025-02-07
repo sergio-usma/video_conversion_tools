@@ -1,10 +1,12 @@
 import os
 import subprocess
+import time
 import datetime
+from tqdm import tqdm
 
 FFMPEG_PATH = r"C:\ffmpeg\ffmpeg.exe"
 
-# Function to compress a single video file
+# Function to compress a video file
 def compress_video(input_file, output_file):
     command = [
         FFMPEG_PATH, '-i', input_file,
@@ -13,40 +15,58 @@ def compress_video(input_file, output_file):
         output_file
     ]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode != 0:
+        print(f"Error compressing {input_file}. Error: {result.stderr.decode()}")
     return result.returncode == 0
 
 def main():
-    # Request file path from the user
-    input_file = input("Enter the full path to the video file you want to compress: ").strip()
+    # Ask for the input file path
+    input_file = input("Enter the full path of the video file: ").strip()
     input_file = os.path.normpath(input_file)
 
     # Check if the file exists and is an MP4 file
-    if not os.path.exists(input_file) or not input_file.lower().endswith('.mp4'):
-        print("The provided file path is invalid or not an MP4 file. Please try again.")
+    if not os.path.isfile(input_file) or not input_file.lower().endswith('.mp4'):
+        print("The specified file does not exist or is not an MP4 file. Please try again.")
+        return
+
+    # Display file size information
+    original_size = os.path.getsize(input_file) / (1024 * 1024)
+    print(f"Original file size: {original_size:.2f} MB")
+
+    # Ask for the output directory path
+    output_base_directory = input("Enter the path for the output directory: ").strip()
+    output_base_directory = os.path.normpath(output_base_directory)
+
+    if not os.path.exists(output_base_directory):
+        print("The entered output directory does not exist. Please try again.")
         return
 
     # Prepare the output file path
+    output_directory = os.path.join(output_base_directory, "COMPRESSED")
+    os.makedirs(output_directory, exist_ok=True)
     file_name = os.path.splitext(os.path.basename(input_file))[0]
-    output_file = os.path.join(os.path.dirname(input_file), f"{file_name}_Compressed.mp4")
+    output_file = os.path.join(output_directory, f"{file_name}_Lite.mp4")
 
-    print(f"Compressing {input_file}...")
-    success = compress_video(input_file, output_file)
+    # Confirm if the user wants to proceed
+    proceed = input("Do you want to start the compression? (Y/N): ").strip().upper()
+    if proceed != 'Y':
+        print("Operation canceled.")
+        return
+
+    print(f"\nProcessing: {input_file}")
+    with tqdm(total=100, desc="File compression", leave=False) as file_bar:
+        success = compress_video(input_file, output_file)
+        file_bar.update(100)
 
     if success:
-        compressed_file_size = os.path.getsize(output_file) / (1024 * 1024)
-        print(f"Compression completed successfully. Compressed file size: {compressed_file_size:.2f} MB")
-        log_file_path = os.path.join(os.path.dirname(input_file), f"compression_log_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
-
-        # Save the log
-        with open(log_file_path, 'w') as log_file:
-            log_file.write("=== Video Compression Log ===\n")
-            log_file.write(f"Original file: {input_file}\n")
-            log_file.write(f"Compressed file: {output_file}\n")
-            log_file.write(f"Compressed size: {compressed_file_size:.2f} MB\n")
-
-        print(f"Log file generated at: {log_file_path}")
+        compressed_size = os.path.getsize(output_file) / (1024 * 1024)
+        print(f"\n=== Compression Summary ===")
+        print(f"Original file size: {original_size:.2f} MB")
+        print(f"Compressed file size: {compressed_size:.2f} MB")
+        print(f"Space saved: {original_size - compressed_size:.2f} MB")
+        print(f"Output saved at: {output_file}")
     else:
-        print("Compression failed. Please check the input file and try again.")
+        print("Compression failed.")
 
 if __name__ == "__main__":
     main()
