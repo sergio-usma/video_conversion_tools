@@ -28,6 +28,8 @@ def compress_video(input_file, output_file):
         output_file
     ]
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode != 0:
+        print(f"Error compressing {input_file}. Error: {result.stderr.decode()}")
     return result.returncode == 0
 
 # Main script function
@@ -61,19 +63,25 @@ def main():
     estimated_time = total_files * 3  # Assuming 3 seconds per file as an approximation
     print("Estimated operation time: {:.2f} minutes".format(estimated_time / 60))
 
+    # Ask if the user wants to save videos in a new folder
+    new_directory_choice = input("Do you want to save the videos in another folder? (Y/N): ").strip().upper()
+    if new_directory_choice == 'Y':
+        output_base_directory = input("Enter the path of the output directory: ").strip()
+        output_base_directory = os.path.normpath(output_base_directory)
+        if not os.path.exists(output_base_directory):
+            print("The entered output directory does not exist. Please try again.")
+            return
+        output_directory = os.path.join(output_base_directory, "COMPRESSED")
+        os.makedirs(output_directory, exist_ok=True)
+    else:
+        output_directory = os.path.join(input_directory, "COMPRESSED")
+        os.makedirs(output_directory, exist_ok=True)
+
     # Confirm if the user wants to proceed
     proceed = input("Do you want to start compression? (Y/N): ").strip().upper()
     if proceed != 'Y':
         print("Operation canceled.")
         return
-
-    # Ask if the user wants to save videos in a new folder
-    new_directory_choice = input("Do you want to save the videos in a new folder? (Y/N): ").strip().upper()
-    if new_directory_choice == 'Y':
-        output_directory = os.path.join(input_directory, "Compressed")
-        os.makedirs(output_directory, exist_ok=True)
-    else:
-        output_directory = input_directory
 
     log_entries = []
     compressed_files_count = 0
@@ -88,7 +96,6 @@ def main():
             # Progress bar for each file
             print(f"Processing: {video_file}")
             with tqdm(total=100, desc="File compression", leave=False) as file_bar:
-                start_time = time.time()
                 success = compress_video(video_file, output_file)
                 file_bar.update(100)
 
@@ -103,7 +110,7 @@ def main():
 
     # Save log
     log_file_name = f"video_compression_log_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    log_file_path = os.path.join(os.path.dirname(__file__), log_file_name)
+    log_file_path = os.path.join(output_directory, log_file_name)
 
     with open(log_file_path, 'w') as log_file:
         log_file.write("=== Video Compression Log ===\n")
