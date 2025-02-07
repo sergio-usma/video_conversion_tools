@@ -75,12 +75,18 @@ def main():
         return
 
     # Ask if the user wants to save videos in a new folder
-    new_directory_choice = input("Do you want to save the videos in a new folder? (Y/N): ").strip().upper()
+    new_directory_choice = input("Do you want to save the videos in another folder? (Y/N): ").strip().upper()
     if new_directory_choice == 'Y':
-        output_directory = os.path.join(input_directory, "Compressed")
+        output_base_directory = input("Enter the path of the output directory: ").strip()
+        output_base_directory = os.path.normpath(output_base_directory)
+        if not os.path.exists(output_base_directory):
+            print("The entered output directory does not exist. Please try again.")
+            return
+        output_directory = os.path.join(output_base_directory, "COMPRESSED")
         os.makedirs(output_directory, exist_ok=True)
     else:
-        output_directory = input_directory
+        output_directory = os.path.join(input_directory, "COMPRESSED")
+        os.makedirs(output_directory, exist_ok=True)
 
     # Ask if the user wants to shut down the computer after compression
     shutdown_choice = input("Do you want to power off the computer when the process finishes? (Y/N): ").strip().upper()
@@ -112,7 +118,7 @@ def main():
 
     # Save log
     log_file_name = f"video_compression_log_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    log_file_path = os.path.join(os.path.dirname(__file__), log_file_name)
+    log_file_path = os.path.join(output_directory, log_file_name)
 
     with open(log_file_path, 'w') as log_file:
         log_file.write("=== Video Compression Log ===\n")
